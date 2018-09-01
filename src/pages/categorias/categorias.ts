@@ -1,8 +1,8 @@
+import { API_CONFIG } from './../../config/api.config';
 import { CategoriaDTO } from './../../models/Categoria.dto';
 import { CategoriaService } from './../../services/domain/categoria.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { map } from 'rxjs/operators';
 
 @IonicPage()
 @Component({
@@ -11,7 +11,8 @@ import { map } from 'rxjs/operators';
 })
 export class CategoriasPage {
 
-  list: CategoriaDTO;
+  items: CategoriaDTO[];
+  bucketUrl = API_CONFIG.bucketBaseUrl;
 
   constructor(
     public navCtrl: NavController,
@@ -23,7 +24,7 @@ export class CategoriasPage {
     this.categoriaService.findAll()
       .pipe()
       .subscribe(resp => {
-        console.log(resp)
+        this.items = resp;
       },
     error => {
       console.log(error)
