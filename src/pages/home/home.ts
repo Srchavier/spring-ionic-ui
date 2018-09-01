@@ -20,10 +20,10 @@ export class HomePage {
     this.navCtrl.setRoot('CategoriasPage')
   }
 
-  ionViewWillEnter(){
-   this.menu.swipeEnable(false);
+  ionViewWillEnter() {
+    this.menu.swipeEnable(false);
   }
-  ionViewWillLeave(){
+  ionViewDidLeave() {
     this.menu.swipeEnable(true);
   }
 
