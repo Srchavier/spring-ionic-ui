@@ -40,12 +40,15 @@ export class AuthService {
 
 
     sucessfulLogin(authorization: string) {
-        let tok = authorization.substring(7);
-        let user: LocalUser = {
-            token: tok,
-            email: this.jwtHelper.decodeToken(tok).sub
+        if (authorization !== null) {
+            let tok = authorization.substring(7);
+            let user: LocalUser = {
+                token: tok,
+                email: this.jwtHelper.decodeToken(tok).sub
+            }
+            this.storageService.setLocalUser(user);
         }
-        this.storageService.setLocalUser(user);
+
     }
 
     logout() {

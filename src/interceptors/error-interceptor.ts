@@ -36,7 +36,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                     break;
 
                 case 403:
-                    this.handle403();
+                    this.handle403(errorObj);
                     break;
 
                 default:
@@ -59,7 +59,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         alert.present();
     }
 
-    handle403() {
+    handle403(errorObj: any) {
         this.storage.setLocalUser(null);
     }
 
