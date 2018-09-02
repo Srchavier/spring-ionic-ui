@@ -5,8 +5,12 @@ import {
 
 import { Observable } from 'rxjs';
 
+import { StorageService } from '../services/storage.service';
+
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
+
+    constructor(public storage: StorageService){}
 
     intercept(req: HttpRequest<any>, next: HttpHandler):
         Observable<HttpEvent<any>> {
@@ -22,8 +26,19 @@ export class ErrorInterceptor implements HttpInterceptor {
 
             console.log("Error detectando pelo interceptor");
             console.log(errorObj);
+
+            switch (errorObj.status) {
+                case 403:
+                this.handle403();
+                break;
+            }
+
             return Observable.throw(errorObj);
         }) as any;
+    }
+
+    handle403() {
+        this.storage.setLocalUser(null);
     }
 }
 
