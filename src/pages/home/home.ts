@@ -23,8 +23,15 @@ export class HomePage {
     public auth: AuthService) {
   }
 
-  login() {
-    this.auth.authenticate(this.creds)
+  ionViewWillEnter() {
+    this.menu.swipeEnable(false);
+  }
+  ionViewDidLeave() {
+    this.menu.swipeEnable(true);
+  }
+  
+  ionViewDidEnter() {
+    this.auth.refreshToken()
       .subscribe(resp => {
         this.auth.sucessfulLogin(resp.headers.get('Authorization'));
         this.navCtrl.setRoot('CategoriasPage')
@@ -32,11 +39,13 @@ export class HomePage {
         error => { })
   }
 
-  ionViewWillEnter() {
-    this.menu.swipeEnable(false);
-  }
-  ionViewDidLeave() {
-    this.menu.swipeEnable(true);
+  login() {
+    this.auth.authenticate(this.creds)
+      .subscribe(resp => {
+        this.auth.sucessfulLogin(resp.headers.get('Authorization'));
+        this.navCtrl.setRoot('CategoriasPage')
+      },
+        error => { })
   }
 
 }
