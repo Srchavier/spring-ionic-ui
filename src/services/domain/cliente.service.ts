@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Rx';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 
-import { ClienteDTO } from './../../models/Cliente.dto';
+import { ClienteDTO } from '../../models/cliente.dto';
 import { StorageService } from '../storage.service';
 
 @Injectable()

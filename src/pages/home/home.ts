@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, IonicPage } from 'ionic-angular';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 
-import { CredenciasDTO } from './../../models/Credencias.dto';
+import { CredenciasDTO } from '../../models/credencias.dto';
 import { AuthService } from '../../services/auth.service';
 
 @IonicPage()
@@ -33,7 +33,7 @@ export class HomePage {
   ionViewDidEnter() {
     this.auth.refreshToken()
       .subscribe(resp => {
-        this.auth.sucessfulLogin(resp.headers.get('Authorization'));
+        this.auth.successfulLogin(resp.headers.get('Authorization'));
         this.navCtrl.setRoot('CategoriasPage')
       },
         error => { })
@@ -42,7 +42,7 @@ export class HomePage {
   login() {
     this.auth.authenticate(this.creds)
       .subscribe(resp => {
-        this.auth.sucessfulLogin(resp.headers.get('Authorization'));
+        this.auth.successfulLogin(resp.headers.get('Authorization'));
         this.navCtrl.setRoot('CategoriasPage')
       },
         error => { })

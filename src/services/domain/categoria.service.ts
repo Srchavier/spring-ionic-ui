@@ -3,7 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from 'rxjs/Rx';
 
 import { API_CONFIG } from './../../config/api.config';
-import { CategoriaDTO } from './../../models/Categoria.dto';
+import { CategoriaDTO } from '../../models/categoria.dto';
 
 @Injectable()
 export class CategoriaService {
