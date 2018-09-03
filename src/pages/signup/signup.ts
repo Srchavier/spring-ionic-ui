@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { EstadoService } from '../../services/domain/estado.service';
 import { CidadeService } from './../../services/domain/cidade.service';
 import { EstadoDTO } from './../../models/Estado.dto';
 import { CidadeDTO } from './../../models/cidade.dto';
+import { ClienteService } from '../../services/domain/cliente.service';
 
 @IonicPage()
 @Component({
@@ -22,13 +23,16 @@ export class SignupPage {
     public navParams: NavParams,
     public formBuilder: FormBuilder,
     public cidadeService: CidadeService,
-    public estadoService: EstadoService) {
+    public estadoService: EstadoService,
+    public clienteService: ClienteService,
+    public alert: AlertController
+  ) {
 
     this.formGroup = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(120)]],
       email: ['', [Validators.required, Validators.email]],
       tipo: ['', [Validators.required]],
-      cpfOuCnpj: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(14)]],
+      cpfOuCnpj: ['', [Validators.required, Validators.minLength(13), Validators.maxLength(18)]],
       senha: ['', [Validators.required, Validators.maxLength(120)]],
       logradouro: ['', [Validators.required, Validators.maxLength(120)]],
       numero: ['', [Validators.required]],
@@ -66,7 +70,23 @@ export class SignupPage {
   }
 
   signupUser() {
-    console.log("enviou")
+    this.clienteService.insert(this.formGroup.value)
+      .pipe()
+      .subscribe(resp => {
+        this.showInsertOk();
+      },
+        error => { });
+  }
+  showInsertOk(): any {
+    let alert = this.alert.create({
+      title: 'Sucesso!',
+      message: 'Cadastrando com sucesso.',
+      enableBackdropDismiss: false,
+      buttons: [
+        { text: 'Ok', handler: () => { this.navCtrl.pop() } }
+      ]
+    })
+    alert.present();
   }
 
 }

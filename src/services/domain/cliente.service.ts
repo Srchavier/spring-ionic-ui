@@ -25,4 +25,28 @@ export class ClienteService {
         return this.http.get(url, { responseType: 'blob' });
     }
 
+    insert(obj: ClienteDTO) {
+        this.formatObjParaPost(obj)
+        return this.http.post(`${API_CONFIG.baseUrl}/clientes`,
+            obj,
+            {
+                observe: 'response',
+                responseType: 'text'
+            });
+    }
+    formatObjParaPost(obj: any): any {
+        if(obj !== null && obj.cep !== null && obj.cpfOuCnpj !== null && obj.telefone1 !== null){
+            obj.cep = this.findAndReplace(obj.cep, /\D/g, ""); 
+            obj.cpfOuCnpj = this.findAndReplace(obj.cpfOuCnpj, /\D/g, ""); 
+            obj.telefone1 = this.findAndReplace(obj.telefone1, /\D/g, ""); 
+            obj.telefone2 = this.findAndReplace(obj.telefone2, /\D/g, ""); 
+            obj.telefone3 = this.findAndReplace(obj.telefone3, /\D/g, ""); 
+        }
+    }
+
+    findAndReplace(string, target, replacement) {
+        string = string.replace(target, replacement);
+        return string;
+       }
+
 }
