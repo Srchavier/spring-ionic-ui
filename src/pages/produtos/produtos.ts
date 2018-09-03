@@ -1,3 +1,4 @@
+import { API_CONFIG } from './../../config/api.config';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
@@ -26,7 +27,19 @@ export class ProdutosPage {
     this.produtoService.findByCategoria(categoria)
       .subscribe(resp => {
         this.items = resp['content'];
+        this.loadImageUrls();
       },
         error => { });
+  }
+
+  loadImageUrls() {
+    for (var i = 0; i < this.items.length; i++) {
+      let item = this.items[i];
+      this.produtoService.getSmallImageFromBucket(item.id)
+        .subscribe(resp => {
+          item.imageUrl = `${API_CONFIG.bucketBaseUrl}/prod${item.id}.jpg`
+        },
+          error => { });
+    }
   }
 }
