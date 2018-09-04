@@ -15,7 +15,7 @@
       <h2>{{item.produto.nome}}</h2>
       <p>{{item.produto.valor | currency}}</p>
       <p>{{item.quantidade}}</p>
-      
+
       <ion-icon class="nolinebreak" name="remove-circle" color="primary" (click)="decreaseQuantity(item.produto)"></ion-icon>
       <p class="nolinebreak">{{item.quantidade}}</p>
       <ion-icon name="add-circle" color="primary" (click)="increaseQuantity(item.produto)"></ion-icon>
