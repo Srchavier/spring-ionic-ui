@@ -1,7 +1,8 @@
-import { PedidoDTO } from './../../models/pedido.dto';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+
+import { PedidoDTO } from './../../models/pedido.dto';
 
 @IonicPage()
 @Component({
@@ -30,8 +31,7 @@ export class PaymentPage {
 
   nextPage(){
     this.pedido.pagamento = this.formGroup.value;
-    console.log(this.pedido);
-    //this.navCtrl.push('', {pedido: this.pedido})
+    this.navCtrl.setRoot('OrderConfirmationPage', {pedido: this.pedido})
   }
 
 }

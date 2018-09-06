@@ -20,6 +20,10 @@ export class ClienteService {
             `${API_CONFIG.baseUrl}/clientes/email?value=${email}`);
     }
 
+    findById(id: string) {
+        return this.http.get(`${API_CONFIG.baseUrl}/clientes/${id}`)
+    }
+
     getImageFroBucket(id: string): Observable<any> {
         let url = `${API_CONFIG.bucketBaseUrl}/cp${id}.jpg`
         return this.http.get(url, { responseType: 'blob' });
@@ -35,18 +39,18 @@ export class ClienteService {
             });
     }
     formatObjParaPost(obj: any): any {
-        if(obj !== null && obj.cep !== null && obj.cpfOuCnpj !== null && obj.telefone1 !== null){
-            obj.cep = this.findAndReplace(obj.cep, /\D/g, ""); 
-            obj.cpfOuCnpj = this.findAndReplace(obj.cpfOuCnpj, /\D/g, ""); 
-            obj.telefone1 = this.findAndReplace(obj.telefone1, /\D/g, ""); 
-            obj.telefone2 = this.findAndReplace(obj.telefone2, /\D/g, ""); 
-            obj.telefone3 = this.findAndReplace(obj.telefone3, /\D/g, ""); 
+        if (obj !== null && obj.cep !== null && obj.cpfOuCnpj !== null && obj.telefone1 !== null) {
+            obj.cep = this.findAndReplace(obj.cep, /\D/g, "");
+            obj.cpfOuCnpj = this.findAndReplace(obj.cpfOuCnpj, /\D/g, "");
+            obj.telefone1 = this.findAndReplace(obj.telefone1, /\D/g, "");
+            obj.telefone2 = this.findAndReplace(obj.telefone2, /\D/g, "");
+            obj.telefone3 = this.findAndReplace(obj.telefone3, /\D/g, "");
         }
     }
 
     findAndReplace(string, target, replacement) {
         string = string.replace(target, replacement);
         return string;
-       }
+    }
 
 }
