@@ -1,6 +1,6 @@
 import { ClienteService } from './../../services/domain/cliente.service';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 
 import { PedidoDTO } from '../../models/pedido.dto';
 import { CartItem } from './../../models/cart-item';
@@ -27,18 +27,22 @@ export class OrderConfirmationPage {
     public navParams: NavParams,
     public cartService: CartService,
     public clienteService: ClienteService,
-    public pedidoService: PedidoService) {
+    public pedidoService: PedidoService,
+    public loadCtrl: LoadingController) {
     this.pedido = this.navParams.get('pedido');
   }
 
   ionViewDidLoad() {
     this.cartItems = this.cartService.getCart().items;
+    let loader = this.presentLoading();
     this.clienteService.findById(this.pedido.cliente.id)
       .subscribe(resp => {
         this.cliente = resp as ClienteDTO;
+        loader.dismiss();
         this.endereco = this.findEndereco(this.pedido.enderecoDeEntrega.id, resp['enderecos']);
       },
         error => {
+          loader.dismiss();
           this.navCtrl.setRoot('homePage');
         })
   }
@@ -61,12 +65,15 @@ export class OrderConfirmationPage {
   }
 
   checkout() {
+    let loader = this.presentLoading();
     this.pedidoService.insert(this.pedido)
       .subscribe(resp => {
         this.cartService.createOrClearCart();
+        loader.dismiss();
         this.codigoPedido = this.extractId(resp.headers.get('location'));
       },
         error => {
+          loader.dismiss();
           if (error.status == 403) {
             this.navCtrl.setRoot('HomePage')
           }
@@ -76,5 +83,13 @@ export class OrderConfirmationPage {
   private extractId(location: string): string {
     let position = location.lastIndexOf('/');
     return location.substring(position + 1, location.length);
+  }
+
+  private presentLoading() {
+    let loader = this.loadCtrl.create({
+      content: "Aguarde..."
+    })
+    loader.present();
+    return loader;
   }
 }
