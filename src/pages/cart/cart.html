@@ -31,5 +31,5 @@
     </ion-item>
   </ion-list>
   <button ion-button block (click)="goOn()">Continuar comprando</button>
-  <button ion-button block color="secondary" (click)="chenckout()">Finalizar pedido</button>
+  <button ion-button block color="secondary" (click)="chenckout()" *ngIf="total() > 0">Finalizar pedido</button>
 </ion-content>
