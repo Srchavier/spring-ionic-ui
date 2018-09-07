@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { CameraOptions, Camera } from '@ionic-native/camera';
+import { DomSanitizer } from '@angular/platform-browser';
 
-import { Camera, CameraOptions } from '@ionic-native/camera';
-
+import { API_CONFIG } from '../../config/api.config';
 import { StorageService } from '../../services/storage.service';
-import { ClienteService } from './../../services/domain/cliente.service';
+import { ClienteService } from '../../services/domain/cliente.service';
 import { ClienteDTO } from '../../models/cliente.dto';
-import { API_CONFIG } from './../../config/api.config';
 
 @IonicPage()
 @Component({
@@ -18,14 +18,17 @@ export class ProfilePage {
   cliente: ClienteDTO;
   picture: string;
   cameraOn: Boolean = false;
+  profileImage;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public storage: StorageService,
-    public clinteService: ClienteService,
-    public camera: Camera
+    public clienteService: ClienteService,
+    public camera: Camera,
+    public sanitizer: DomSanitizer
   ) {
+    this.profileImage = 'assets/imgs/avatar-blank.png';
   }
 
   ionViewDidLoad() {
@@ -35,7 +38,7 @@ export class ProfilePage {
   loadData() {
     let localUser = this.storage.getLocalUser();
     if (localUser && localUser.email) {
-      this.clinteService.findByEmail(localUser.email)
+      this.clienteService.findByEmail(localUser.email)
         .subscribe(resp => {
           this.cliente = resp as ClienteDTO;
           this.getImageIfExists();
@@ -51,18 +54,36 @@ export class ProfilePage {
   }
 
   getImageIfExists() {
-    this.clinteService.getImageFroBucket(this.cliente.id)
-      .subscribe(resp => {
-        this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`
+    this.clienteService.getImageFroBucket(this.cliente.id)
+      .subscribe(response => {
+        this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
+        this.blobToDataURL(response).then(dataUrl => {
+          let str: string = dataUrl as string;
+          this.profileImage = this.sanitizer.bypassSecurityTrustUrl(str);
+        });
       },
-        error => { });
+        error => {
+          this.profileImage = 'assets/imgs/avatar-blank.png';
+        });
+  }
+
+  // https://gist.github.com/frumbert/3bf7a68ffa2ba59061bdcfc016add9ee
+  blobToDataURL(blob) {
+    return new Promise((fulfill, reject) => {
+      let reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = (e) => fulfill(reader.result);
+      reader.readAsDataURL(blob);
+    })
   }
 
   getCameraPicture() {
+
     this.cameraOn = true;
+
     const options: CameraOptions = {
       quality: 100,
-      destinationType: this.camera.DestinationType.FILE_URI,
+      destinationType: this.camera.DestinationType.DATA_URL,
       encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE
     }
@@ -71,19 +92,38 @@ export class ProfilePage {
       this.picture = 'data:image/png;base64,' + imageData;
       this.cameraOn = false;
     }, (err) => {
+      this.cameraOn = false;
+    });
+  }
+
+  getGalleryPicture() {
+
+    this.cameraOn = true;
+
+    const options: CameraOptions = {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+
+    this.camera.getPicture(options).then((imageData) => {
+      this.picture = 'data:image/png;base64,' + imageData;
+      this.cameraOn = false;
+    }, (err) => {
+      this.cameraOn = false;
     });
   }
 
   sendPicture() {
-    this.clinteService.uploadPicture(this.picture)
-      .subscribe(resp => {
+    this.clienteService.uploadPicture(this.picture)
+      .subscribe(response => {
         this.picture = null;
-        this.loadData();
+        this.getImageIfExists();
       },
         error => {
-
         });
-
   }
 
   cancel() {
