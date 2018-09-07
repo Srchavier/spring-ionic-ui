@@ -25,10 +25,14 @@ export class ProfilePage {
     public storage: StorageService,
     public clinteService: ClienteService,
     public camera: Camera
-    ) {
+  ) {
   }
 
   ionViewDidLoad() {
+    this.loadData();
+  }
+
+  loadData() {
     let localUser = this.storage.getLocalUser();
     if (localUser && localUser.email) {
       this.clinteService.findByEmail(localUser.email)
@@ -36,8 +40,8 @@ export class ProfilePage {
           this.cliente = resp as ClienteDTO;
           this.getImageIfExists();
         },
-          error => { 
-            if(error.status === 403){
+          error => {
+            if (error.status === 403) {
               this.navCtrl.setRoot('HomePage');
             }
           })
@@ -62,12 +66,28 @@ export class ProfilePage {
       encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE
     }
-    
+
     this.camera.getPicture(options).then((imageData) => {
-     this.picture = 'data:image/png;base64,' + imageData;
-     this.cameraOn = false;
+      this.picture = 'data:image/png;base64,' + imageData;
+      this.cameraOn = false;
     }, (err) => {
     });
+  }
+
+  sendPicture() {
+    this.clinteService.uploadPicture(this.picture)
+      .subscribe(resp => {
+        this.picture = null;
+        this.loadData();
+      },
+        error => {
+
+        });
+
+  }
+
+  cancel() {
+    this.picture = null;
   }
 
 }

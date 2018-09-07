@@ -5,6 +5,7 @@ import { Injectable } from "@angular/core";
 
 import { ClienteDTO } from '../../models/cliente.dto';
 import { StorageService } from '../storage.service';
+import { ImageUtilService } from '../ImageUtilService';
 
 @Injectable()
 export class ClienteService {
@@ -12,7 +13,8 @@ export class ClienteService {
 
     constructor(
         public http: HttpClient,
-        public storage: StorageService) {
+        public storage: StorageService,
+        public imageUltilService: ImageUtilService) {
     }
 
     findByEmail(email: string) {
@@ -51,6 +53,18 @@ export class ClienteService {
     findAndReplace(string, target, replacement) {
         string = string.replace(target, replacement);
         return string;
+    }
+
+    uploadPicture(picture: string) {
+        let pictureBlob = this.imageUltilService.dataUriToBlob(picture);
+        let formData: FormData = new FormData();
+        formData.set('file', pictureBlob, 'file.png');
+        return this.http.post(`${API_CONFIG.baseUrl}/clientes/foto`,
+            formData,
+            {
+                observe: 'response',
+                responseType: 'text'
+            });
     }
 
 }
