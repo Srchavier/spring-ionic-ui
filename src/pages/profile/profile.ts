@@ -17,8 +17,8 @@ export class ProfilePage {
 
   cliente: ClienteDTO;
   picture: string;
-  cameraOn: Boolean = false;
   profileImage;
+  cameraOn: Boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -54,7 +54,7 @@ export class ProfilePage {
   }
 
   getImageIfExists() {
-    this.clienteService.getImageFroBucket(this.cliente.id)
+    this.clienteService.getImageFromBucket(this.cliente.id)
       .subscribe(response => {
         this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
         this.blobToDataURL(response).then(dataUrl => {
@@ -74,7 +74,8 @@ export class ProfilePage {
       reader.onerror = reject;
       reader.onload = (e) => fulfill(reader.result);
       reader.readAsDataURL(blob);
-    })
+
+    });
   }
 
   getCameraPicture() {
